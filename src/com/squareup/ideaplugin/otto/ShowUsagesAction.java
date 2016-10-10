@@ -26,29 +26,13 @@ import com.intellij.find.FindManager;
 import com.intellij.find.FindSettings;
 import com.intellij.find.actions.FindUsagesInFileAction;
 import com.intellij.find.actions.UsageListCellRenderer;
-import com.intellij.find.findUsages.AbstractFindUsagesDialog;
-import com.intellij.find.findUsages.FindUsagesHandler;
-import com.intellij.find.findUsages.FindUsagesManager;
-import com.intellij.find.findUsages.FindUsagesOptions;
-import com.intellij.find.findUsages.PsiElement2UsageTargetAdapter;
+import com.intellij.find.findUsages.*;
 import com.intellij.find.impl.FindManagerImpl;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.DataManager;
 import com.intellij.ide.util.gotoByName.ModelDiff;
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionPlaces;
-import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CustomShortcutSet;
-import com.intellij.openapi.actionSystem.DataProvider;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
-import com.intellij.openapi.actionSystem.IdeActions;
-import com.intellij.openapi.actionSystem.KeyboardShortcut;
-import com.intellij.openapi.actionSystem.LangDataKeys;
-import com.intellij.openapi.actionSystem.PlatformDataKeys;
-import com.intellij.openapi.actionSystem.PopupAction;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditor;
@@ -69,39 +53,17 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.SmartPsiElementPointer;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.ProjectScope;
 import com.intellij.psi.search.PsiElementProcessor;
 import com.intellij.psi.search.SearchScope;
-import com.intellij.ui.ActiveComponent;
-import com.intellij.ui.InplaceButton;
-import com.intellij.ui.JBTableWithHintProvider;
-import com.intellij.ui.ScreenUtil;
-import com.intellij.ui.SpeedSearchBase;
-import com.intellij.ui.SpeedSearchComparator;
-import com.intellij.ui.TableScrollingUtil;
-import com.intellij.ui.TableUtil;
+import com.intellij.ui.*;
 import com.intellij.ui.awt.RelativePoint;
 import com.intellij.ui.popup.AbstractPopup;
+import com.intellij.ui.table.JBTable;
 import com.intellij.usageView.UsageViewBundle;
-import com.intellij.usages.PsiElementUsageTarget;
-import com.intellij.usages.Usage;
-import com.intellij.usages.UsageInfo2UsageAdapter;
-import com.intellij.usages.UsageInfoToUsageConverter;
-import com.intellij.usages.UsageTarget;
-import com.intellij.usages.UsageToPsiElementProvider;
-import com.intellij.usages.UsageView;
-import com.intellij.usages.UsageViewManager;
-import com.intellij.usages.UsageViewPresentation;
-import com.intellij.usages.UsageViewSettings;
-import com.intellij.usages.impl.GroupNode;
-import com.intellij.usages.impl.NullUsage;
-import com.intellij.usages.impl.UsageGroupingRuleProviderImpl;
-import com.intellij.usages.impl.UsageNode;
-import com.intellij.usages.impl.UsageViewImpl;
-import com.intellij.usages.impl.UsageViewManagerImpl;
-import com.intellij.usages.impl.UsageViewTreeModelBuilder;
+import com.intellij.usages.*;
+import com.intellij.usages.impl.*;
 import com.intellij.usages.rules.UsageFilteringRuleProvider;
 import com.intellij.util.Alarm;
 import com.intellij.util.PlatformIcons;
@@ -110,31 +72,17 @@ import com.intellij.util.messages.MessageBusConnection;
 import com.intellij.util.ui.AsyncProcessIcon;
 import com.intellij.util.ui.ColumnInfo;
 import com.intellij.util.ui.ListTableModel;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTable;
-import javax.swing.SwingUtilities;
-import javax.swing.table.TableColumn;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import javax.swing.*;
+import javax.swing.table.TableColumn;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.*;
+import java.util.List;
 
 public class ShowUsagesAction extends AnAction implements PopupAction {
   private final boolean showSettingsDialogBefore;
@@ -1114,7 +1062,7 @@ public class ShowUsagesAction extends AnAction implements PopupAction {
     return newFileEditor instanceof TextEditor ? ((TextEditor)newFileEditor).getEditor() : null;
   }
 
-  private static class MyTable extends JBTableWithHintProvider implements DataProvider {
+  private static class MyTable extends JBTable implements DataProvider {
     @Override
     public boolean getScrollableTracksViewportWidth() {
       return true;
@@ -1131,7 +1079,6 @@ public class ShowUsagesAction extends AnAction implements PopupAction {
       return null;
     }
 
-    @Override
     @Nullable
     protected PsiElement getPsiElementForHint(Object selectedValue) {
       if (selectedValue instanceof UsageNode) {

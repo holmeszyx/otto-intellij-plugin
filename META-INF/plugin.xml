@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>com.squareup.ideaplugin.otto</id>
   <name>Otto Plugin</name>
-  <version>1.0</version>
+  <version>1.0.2</version>
   <vendor email="support@squareup.com" url="http://square.github.io">Square, Inc.</vendor>
 
   <description><![CDATA[
@@ -13,6 +13,7 @@
       ]]></description>
 
   <change-notes><![CDATA[
+    1.0.2: Support Android Studio 2.2 <br/>
     1.0.0: Initial version.
   ]]></change-notes>
 
